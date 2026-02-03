@@ -424,23 +424,26 @@ function loadState() {
   const storedData = localStorage.getItem("ht-data");
   const today = getTodayString();
 
+  console.log("Stored date:", storedDate, "Today:", today);
+
   if (storedDate && storedData) {
     let cards = JSON.parse(storedData);
-    if (storedDate === today) {
-      return cards;
-    } else {
+    if (storedDate !== today) {
       // New day — reset done status, keep tasks
+      console.log("New day detected - resetting tasks");
       cards = cards.map(card => ({
         ...card,
         tasks: card.tasks.map(t => ({ ...t, done: false }))
       }));
-      saveState(cards);
-      return cards;
+      localStorage.setItem("ht-date", today);
+      localStorage.setItem("ht-data", JSON.stringify(cards));
     }
+    return cards;
   }
   // First time
   const initial = getInitialCards();
-  saveState(initial);
+  localStorage.setItem("ht-date", today);
+  localStorage.setItem("ht-data", JSON.stringify(initial));
   return initial;
 }
 
@@ -616,3 +619,4 @@ render();
 </script>
 </body>
 </html>
+
